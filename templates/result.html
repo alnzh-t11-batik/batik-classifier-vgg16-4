@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Hasil Klasifikasi{% endblock %}
+
+{% block content %}
+  <div class="container my-5">
+
+    {% if model_mode == "demo" %}
+      <div class="alert demo-alert mb-4" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        Hasil di bawah ini menggunakan <strong>mode demo</strong> (label ImageNet umum),
+        karena model khusus motif batik belum dilatih. Latih model dengan
+        <code>python train_model.py</code> agar hasil sesuai motif batik Nusantara.
+      </div>
+    {% endif %}
+
+    <div class="row g-4">
+      <!-- ==================== GAMBAR YANG DIUNGGAH ==================== -->
+      <div class="col-lg-6">
+        <div class="result-image-wrapper">
+          <img src="{{ gambar_url }}" alt="Gambar batik yang diunggah oleh pengguna">
+        </div>
+
+        <!-- ==================== INFO TEKNIS GAMBAR ==================== -->
+        <div class="row g-2 mt-3">
+          <div class="col-4">
+            <div class="mini-stat p-2 text-center">
+              <i class="bi bi-aspect-ratio"></i>
+              <p class="small mb-0">{{ dimensi_asli }}</p>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="mini-stat p-2 text-center">
+              <i class="bi bi-hdd"></i>
+              <p class="small mb-0">{{ ukuran_file_kb }} KB</p>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="mini-stat p-2 text-center">
+              <i class="bi bi-stopwatch"></i>
+              <p class="small mb-0">{{ waktu_proses_ms }} ms</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== HASIL PREDIKSI ==================== -->
+      <div class="col-lg-6">
+        <p class="text-muted mb-1">Hasil identifikasi motif:</p>
+        <span class="prediction-badge mb-3">{{ prediksi_utama.label }}</span>
+        <p class="mt-2 mb-1">
+          Tingkat keyakinan model:
+          <strong>{{ prediksi_utama.confidence }}%</strong>
+        </p>
+        <p class="small text-muted mb-4">
+          Artinya, dari semua pola yang pernah dipelajari, foto Anda paling
+          mirip dengan pola motif <strong>{{ prediksi_utama.label.replace("_", " ") }}</strong>
+          sebesar angka di atas.
+        </p>
+
+        <!-- Top-3 hasil klasifikasi: grafik donat + progress bar -->
+        <h6 class="fw-semibold mb-3">Top-3 Kemungkinan Motif</h6>
+        <div class="row g-3 align-items-center mb-2">
+          <div class="col-5 col-sm-4">
+            <canvas id="chart-top3" height="140"
+                    data-labels='{{ daftar_hasil | map(attribute="label") | list | tojson }}'
+                    data-values='{{ daftar_hasil | map(attribute="confidence") | list | tojson }}'></canvas>
+          </div>
+          <div class="col-7 col-sm-8">
+            {% for hasil in daftar_hasil %}
+              <div class="confidence-item">
+                <div class="confidence-label">
+                  <span>{{ hasil.label }}</span>
+                  <span>{{ hasil.confidence }}%</span>
+                </div>
+                <div class="progress">
+                  <div class="progress-bar progress-bar-batik" role="progressbar"
+                       data-confidence="{{ hasil.confidence }}"
+                       aria-valuenow="{{ hasil.confidence }}" aria-valuemin="0" aria-valuemax="100">
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- ==================== INFORMASI MOTIF (jika model terlatih) ==================== -->
+        {% if info_motif %}
+          <div class="info-card p-4 mt-4">
+            <h6 class="fw-bold mb-2"><i class="bi bi-book"></i> Tentang Motif {{ prediksi_utama.label.replace("_", " ") }}</h6>
+            <p class="mb-1"><strong>Asal daerah:</strong> {{ info_motif.asal }}</p>
+            <p class="mb-2"><strong>Makna filosofis:</strong> {{ info_motif.filosofi }}</p>
+            {% if info_motif.ciri %}
+              <p class="mb-2"><strong>Ciri visual utama:</strong></p>
+              <div class="d-flex flex-wrap gap-2 mb-3">
+                {% for ciri in info_motif.ciri %}
+                  <span class="badge rounded-pill badge-outline-sogan">{{ ciri }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+            <p class="mb-0">{{ info_motif.deskripsi }}</p>
+          </div>
+        {% endif %}
+
+        <div class="d-flex gap-2 mt-4">
+          <a href="{{ url_for('klasifikasi') }}" class="btn btn-batik">
+            <i class="bi bi-arrow-repeat me-1"></i> Coba Gambar Lain
+          </a>
+          <a href="{{ url_for('evaluasi_model_view') }}" class="btn btn-outline-batik">
+            Lihat Performa Model
+          </a>
+        </div>
+
+        {% if model_mode == "terlatih" %}
+          <p class="text-muted small mt-3 mb-0">
+            <i class="bi bi-info-circle"></i>
+            Hasil klasifikasi dipengaruhi oleh kualitas foto (pencahayaan, sudut
+            pengambilan, kedekatan kamera terhadap kain) dan kemiripan visual antar
+            motif. Lihat halaman Evaluasi Model untuk mengetahui motif mana yang
+            paling sering tertukar oleh sistem.
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

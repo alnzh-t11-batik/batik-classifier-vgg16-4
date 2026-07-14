@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Tentang{% endblock %}
+
+{% block content %}
+  <div class="page-header-strip batik-pattern-bg">
+    <div class="container text-center py-5">
+      <h1 class="font-display text-white mb-2">Tentang Sistem</h1>
+      <p class="hero-subtitle mx-auto mb-0">Metode transfer learning VGG16 di balik Batik AI Classifier</p>
+    </div>
+  </div>
+  <div class="canting-divider"></div>
+
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+
+        <p>
+          Batik AI Classifier adalah sistem identifikasi motif batik yang
+          menggunakan pendekatan transfer learning dengan arsitektur VGG16,
+          dibungkus dalam aplikasi web sederhana berbasis Flask sehingga dapat
+          diakses langsung dari browser.
+        </p>
+
+        <h5 class="font-display mt-4">Apa itu Transfer Learning?</h5>
+        <p>
+          Transfer learning adalah teknik dalam deep learning yang memanfaatkan
+          model yang sudah dilatih sebelumnya pada dataset besar (dalam kasus
+          ini ImageNet, berisi lebih dari 14 juta gambar dalam 1.000 kategori),
+          lalu digunakan kembali untuk menyelesaikan tugas baru yang lebih
+          spesifik, yaitu mengenali motif batik Nusantara.
+        </p>
+
+        <h5 class="font-display mt-4">Mengapa VGG16?</h5>
+        <p>
+          VGG16 merupakan arsitektur convolutional neural network dengan 16
+          layer berbobot (13 layer konvolusi dan 3 fully connected),
+          dikembangkan oleh Visual Geometry Group, Universitas Oxford.
+          Arsitekturnya yang dalam namun sederhana membuatnya sangat baik dalam
+          mengekstraksi fitur visual umum seperti tepi, tekstur, dan pola
+          berulang, karakteristik yang sangat relevan untuk mengenali motif
+          batik.
+        </p>
+
+        <div class="row g-3 my-4">
+          <div class="col-md-6">
+            <div class="info-card p-3 h-100">
+              <h6 class="fw-bold"><i class="bi bi-layers"></i> Feature Extraction</h6>
+              <p class="small mb-0">
+                Seluruh layer konvolusi VGG16 dibekukan (tidak dilatih ulang),
+                lalu ditambahkan layer Dense baru sebagai classifier khusus
+                motif batik.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-card p-3 h-100">
+              <h6 class="fw-bold"><i class="bi bi-sliders"></i> Fine-Tuning</h6>
+              <p class="small mb-0">
+                Beberapa layer terakhir VGG16 dibuka dan dilatih ulang dengan
+                learning rate kecil, agar model lebih mengenali detail khas
+                motif batik secara lebih spesifik.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <h5 class="font-display mt-4">Arsitektur Model</h5>
+        <pre class="bg-light p-3 rounded small">INPUT (224x224x3)
+-> [VGG16 Convolutional Base - pretrained ImageNet]
+-> Flatten
+-> Dense(256, ReLU)
+-> Dropout(0.5)
+-> Dense(jumlah_kelas, Softmax)</pre>
+
+        {% if model_mode == "terlatih" and class_names %}
+          <h5 class="font-display mt-4">Motif Batik yang Dikenali Model Saat Ini</h5>
+          <div class="d-flex flex-wrap gap-2">
+            {% for nama in class_names %}
+              <span class="badge rounded-pill badge-sogan">{{ nama.replace("_", " ") }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <h5 class="font-display mt-4">Alur Kerja Sistem</h5>
+        <ol>
+          <li>Pengguna mengunggah foto kain batik melalui halaman Klasifikasi.</li>
+          <li>Gambar di-resize menjadi 224x224 piksel dan dinormalisasi sesuai kebutuhan VGG16.</li>
+          <li>Model melakukan inferensi dan menghasilkan probabilitas untuk setiap kelas motif.</li>
+          <li>Tiga motif dengan probabilitas tertinggi ditampilkan beserta persentase keyakinan.</li>
+          <li>Informasi edukatif (asal daerah dan makna filosofis) motif yang paling mungkin ditampilkan.</li>
+        </ol>
+
+        <h5 class="font-display mt-4">Teknologi yang Digunakan</h5>
+        <ul>
+          <li><strong>Backend</strong>: Flask, TensorFlow/Keras</li>
+          <li><strong>Model</strong>: VGG16 (pretrained ImageNet) dengan Feature Extraction dan Fine-Tuning</li>
+          <li><strong>Frontend</strong>: HTML5, Bootstrap 5, JavaScript, Bootstrap Icons</li>
+        </ul>
+
+        <a href="{{ url_for('klasifikasi') }}" class="btn btn-batik mt-3">
+          <i class="bi bi-camera me-1"></i> Coba Klasifikasi Sekarang
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

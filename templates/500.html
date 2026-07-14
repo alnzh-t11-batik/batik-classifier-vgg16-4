@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Kesalahan Server{% endblock %}
+
+{% block content %}
+  <div class="container my-5 text-center">
+    <i class="bi bi-exclamation-triangle icon-xl-sogan"></i>
+    <h2 class="font-display mt-3">500 - Terjadi Kesalahan pada Server</h2>
+    <p class="text-muted">Mohon maaf, terjadi kendala teknis saat memproses permintaan Anda.</p>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-batik mt-2">
+      <i class="bi bi-house-door me-1"></i> Kembali ke Beranda
+    </a>
+  </div>
+{% endblock %}

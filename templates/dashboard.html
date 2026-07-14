@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+  <!-- ==================== HERO SECTION ==================== -->
+  <section class="hero-section batik-pattern-bg">
+    <div class="container">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-8">
+          <span class="badge rounded-pill badge-gold">
+            <i class="bi bi-cpu"></i> Transfer Learning VGG16
+          </span>
+          <h1 class="hero-title font-display mt-3">
+            Kenali <span class="accent">Motif Batik</span> Nusantara Hanya dari Sebuah Foto
+          </h1>
+          <p class="hero-subtitle mx-auto mt-3">
+            Sistem ini bekerja seperti mata yang sudah dilatih mengenali pola
+            kain. Cukup unggah foto batik Keraton, sistem akan menebak
+            motifnya beserta asal daerah dan makna filosofisnya.
+          </p>
+          <a href="{{ url_for('klasifikasi') }}" class="btn btn-batik btn-lg mt-3">
+            <i class="bi bi-camera me-1"></i> Mulai Klasifikasi
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="canting-divider"></div>
+
+  {% if model_mode == "demo" %}
+    <div class="container">
+      <div class="alert demo-alert mt-4" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        <strong>Mode Demo:</strong> Model khusus motif batik belum dilatih.
+        Sistem sementara menggunakan VGG16 dengan bobot ImageNet bawaan agar
+        alur unggah dan prediksi tetap bisa dicoba.
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- ==================== STATISTIK RINGKAS ==================== -->
+  <div class="container my-5">
+    <div class="row g-4 text-center">
+      <div class="col-6 col-md-3">
+        <div class="stat-card p-4">
+          <i class="bi bi-flower2 stat-icon"></i>
+          <h3 class="font-display mb-0">{{ total_kelas }}</h3>
+          <p class="text-muted small mb-0">Motif Dikenali</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card p-4">
+          <i class="bi bi-images stat-icon"></i>
+          <h3 class="font-display mb-0">{{ total_gambar if total_gambar else "-" }}</h3>
+          <p class="text-muted small mb-0">Gambar Dataset</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card p-4">
+          <i class="bi bi-cpu stat-icon"></i>
+          <h3 class="font-display mb-0">VGG16</h3>
+          <p class="text-muted small mb-0">Arsitektur Model</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card p-4">
+          <i class="bi bi-graph-up-arrow stat-icon"></i>
+          <h3 class="font-display mb-0">{{ metrik.akurasi_test ~ "%" if metrik else "-" }}</h3>
+          <p class="text-muted small mb-0">Akurasi Data Uji</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PENJELASAN SEDERHANA UNTUK ORANG AWAM ==================== -->
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <h2 class="font-display text-center mb-4">Bagaimana Sistem Ini Bisa Mengenali Motif Batik?</h2>
+        <p class="text-center text-muted mb-5">
+          Tidak perlu paham pemrograman untuk mengerti cara kerjanya.
+          Berikut penjelasan sederhananya.
+        </p>
+
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="explain-card p-4 h-100">
+              <div class="explain-number">1</div>
+              <h6 class="fw-bold mt-2">Komputer Belajar Melihat Dulu</h6>
+              <p class="small text-muted mb-0">
+                Sebelum belajar batik, model bernama VGG16 sudah lebih dulu
+                dilatih dengan jutaan foto berbagai macam objek sehari-hari
+                (kucing, mobil, bunga, dan lainnya). Dari situ, komputer
+                belajar mengenali hal dasar seperti garis, sudut, warna, dan
+                bentuk, persis seperti bayi yang belajar mengenali bentuk
+                sebelum mengenal nama benda.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="explain-card p-4 h-100">
+              <div class="explain-number">2</div>
+              <h6 class="fw-bold mt-2">Kemampuan Itu Dipakai Ulang</h6>
+              <p class="small text-muted mb-0">
+                Kemampuan mengenali garis dan bentuk tadi tidak dibuang.
+                Konsep ini disebut <strong>transfer learning</strong>, mirip
+                seperti orang yang sudah bisa membaca huruf latin akan lebih
+                cepat belajar bahasa baru dibanding mulai dari nol. Sistem
+                lalu dilatih ulang secara khusus menggunakan ratusan foto
+                kain batik Keraton, agar mengenali pola garis diagonal
+                Parang, bulatan Kawung, gradasi awan Mega Mendung, dan
+                titik bintang Truntum.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="explain-card p-4 h-100">
+              <div class="explain-number">3</div>
+              <h6 class="fw-bold mt-2">Menebak dengan Angka Keyakinan</h6>
+              <p class="small text-muted mb-0">
+                Saat Anda unggah foto baru, sistem membandingkan pola pada
+                foto tersebut dengan pola yang sudah dipelajari, lalu memberi
+                nilai persentase untuk tiap kemungkinan motif. Semakin mirip
+                polanya dengan yang pernah dipelajari, semakin tinggi
+                persentase keyakinannya.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== GRAFIK DISTRIBUSI DATASET ==================== -->
+  {% if statistik_dataset %}
+    <div class="container my-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="info-card p-4">
+            <h6 class="fw-bold mb-1"><i class="bi bi-bar-chart-line"></i> Jumlah Gambar per Motif</h6>
+            <p class="small text-muted mb-3">
+              Grafik ini menunjukkan berapa banyak contoh foto yang dipelajari
+              sistem untuk tiap motif. Semakin banyak dan beragam contohnya,
+              biasanya semakin akurat pula sistem mengenali motif tersebut.
+            </p>
+            <canvas id="chart-distribusi-motif" height="110"
+                    data-labels='{{ statistik_dataset | map(attribute="nama") | list | tojson }}'
+                    data-totals='{{ statistik_dataset | map(attribute="total") | list | tojson }}'></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- ==================== GALERI MOTIF ==================== -->
+  <div class="container my-5">
+    <h2 class="font-display text-center mb-2">Motif yang Dikenali Sistem</h2>
+    <p class="text-muted text-center mb-5">Setiap motif memiliki pola visual dan makna filosofis yang berbeda</p>
+    <div class="row g-4">
+      {% for nama, info in batik_info.items() %}
+        <div class="col-md-6 col-lg-3">
+          <div class="motif-card h-100">
+            <img src="{{ url_for('static', filename='img/motif/' ~ nama|lower ~ '.png') }}"
+                 class="motif-card-img" alt="Ilustrasi pola motif {{ nama.replace('_', ' ') }}">
+            <div class="p-3">
+              <h5 class="font-display mb-1">{{ nama.replace("_", " ") }}</h5>
+              <p class="small text-muted mb-2"><i class="bi bi-geo-alt"></i> {{ info.asal }}</p>
+              <p class="small mb-0">{{ info.deskripsi[:90] }}...</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ==================== PERTANYAAN UMUM ==================== -->
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <h2 class="font-display text-center mb-4">Pertanyaan yang Sering Ditanyakan</h2>
+        <div class="accordion" id="faqAccordion">
+
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                Kenapa hasil klasifikasi kadang salah?
+              </button>
+            </h2>
+            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+              <div class="accordion-body small">
+                Ada dua motif atau lebih yang polanya bisa terlihat mirip
+                dari sudut atau pencahayaan tertentu, sehingga sistem bisa
+                keliru menebak. Faktor lain adalah jumlah dan variasi foto
+                yang dipelajari sistem saat pelatihan. Semakin sedikit atau
+                seragam contohnya, semakin besar peluang sistem salah menebak
+                pada foto yang berbeda gayanya. Anda bisa melihat motif mana
+                saja yang paling sering tertukar di halaman Evaluasi Model.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                Apa maksud dari persentase keyakinan?
+              </button>
+            </h2>
+            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body small">
+                Angka itu bukan ukuran seberapa benar hasilnya, melainkan
+                seberapa mirip pola pada foto Anda dengan pola yang pernah
+                dipelajari sistem untuk motif tersebut. Angka 90 persen
+                berarti sistem sangat yakin, sedangkan angka di bawah 50
+                persen berarti sistem ragu-ragu dan hasil sebaiknya dicek
+                ulang secara manual.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                Apa bedanya data train, validasi, dan test?
+              </button>
+            </h2>
+            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body small">
+                Data train dipakai untuk mengajari sistem mengenali pola.
+                Data validasi dipakai untuk memantau perkembangan belajar
+                selama proses pelatihan berlangsung. Data test sengaja
+                disembunyikan dan baru dipakai di akhir, untuk menguji
+                apakah sistem benar-benar bisa mengenali motif pada foto
+                yang belum pernah dilihat sebelumnya, bukan sekadar
+                menghafal foto yang sudah dipelajari.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                Foto seperti apa yang memberi hasil terbaik?
+              </button>
+            </h2>
+            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body small">
+                Foto close-up pada kain, dengan pencahayaan cukup dan motif
+                terlihat jelas tanpa banyak lipatan, biasanya memberi hasil
+                paling akurat. Foto dari jarak jauh atau dengan motif yang
+                tertutup bayangan cenderung membuat sistem lebih sulit
+                mengenali pola.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CTA BAWAH ==================== -->
+  <div class="container mb-5">
+    <div class="cta-banner p-5 text-center">
+      <h3 class="font-display mb-2">Siap mencoba mengidentifikasi motif batik Anda?</h3>
+      <p class="mb-4">Unggah foto dan dapatkan hasil identifikasi dalam hitungan detik.</p>
+      <a href="{{ url_for('klasifikasi') }}" class="btn btn-outline-batik btn-lg">
+        <i class="bi bi-arrow-right-circle me-1"></i> Coba Sekarang
+      </a>
+    </div>
+  </div>
+
+{% endblock %}

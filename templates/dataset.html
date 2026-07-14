@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Dataset{% endblock %}
+
+{% block content %}
+  <div class="page-header-strip batik-pattern-bg">
+    <div class="container text-center py-5">
+      <h1 class="font-display text-white mb-2">Dataset</h1>
+      <p class="hero-subtitle mx-auto mb-0">Data yang dipelajari sistem sebelum bisa mengenali motif batik</p>
+    </div>
+  </div>
+  <div class="canting-divider"></div>
+
+  <div class="container my-5">
+
+    <div class="info-card p-4 mb-4">
+      <h6 class="fw-bold mb-2"><i class="bi bi-database"></i> Sumber Dataset</h6>
+      <p class="mb-1"><strong>{{ sumber_nama }}</strong></p>
+      <p class="small mb-2">
+        <a href="{{ sumber_url }}" target="_blank" rel="noopener noreferrer">{{ sumber_url }}</a>
+      </p>
+      <p class="small text-muted mb-0">
+        Dataset ini berisi kumpulan foto kain batik dari tiga wilayah keraton
+        di Jawa, yaitu Surakarta, Yogyakarta, dan Cirebon. Setiap foto sudah
+        dikelompokkan berdasarkan motifnya oleh pembuat dataset, sehingga
+        sistem bisa belajar dari contoh yang sudah diberi label dengan benar.
+      </p>
+    </div>
+
+    {% if statistik_dataset %}
+
+      <!-- ==================== GRAFIK PEMBAGIAN DATA ==================== -->
+      <div class="info-card p-4 mb-4">
+        <h6 class="fw-bold mb-1"><i class="bi bi-bar-chart-line"></i> Pembagian Data Tiap Motif</h6>
+        <p class="small text-muted mb-3">
+          Setiap motif dibagi menjadi tiga bagian dengan tujuan yang berbeda,
+          lihat penjelasannya di bagian bawah halaman ini.
+        </p>
+        <canvas id="chart-split-dataset" height="110"
+                data-labels='{{ statistik_dataset | map(attribute="nama") | list | tojson }}'
+                data-train='{{ statistik_dataset | map(attribute="train") | list | tojson }}'
+                data-val='{{ statistik_dataset | map(attribute="val") | list | tojson }}'
+                data-test='{{ statistik_dataset | map(attribute="test") | list | tojson }}'></canvas>
+      </div>
+
+      <!-- ==================== TABEL DETAIL ==================== -->
+      <div class="info-card p-4">
+        <h6 class="fw-bold mb-3"><i class="bi bi-table"></i> Rincian Jumlah Gambar</h6>
+        <div class="table-responsive">
+          <table class="table table-batik align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Motif</th>
+                <th class="text-end">Train</th>
+                <th class="text-end">Validasi</th>
+                <th class="text-end">Test</th>
+                <th class="text-end">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% set grand_train = namespace(v=0) %}
+              {% set grand_val = namespace(v=0) %}
+              {% set grand_test = namespace(v=0) %}
+              {% set grand_total = namespace(v=0) %}
+              {% for item in statistik_dataset %}
+                <tr>
+                  <td>
+                    <span class="dot-swatch swatch-{{ item.nama|lower }}"></span>
+                    {{ item.nama.replace("_", " ") }}
+                  </td>
+                  <td class="text-end">{{ item.train }}</td>
+                  <td class="text-end">{{ item.val }}</td>
+                  <td class="text-end">{{ item.test }}</td>
+                  <td class="text-end fw-bold">{{ item.total }}</td>
+                </tr>
+                {% set grand_train.v = grand_train.v + item.train %}
+                {% set grand_val.v = grand_val.v + item.val %}
+                {% set grand_test.v = grand_test.v + item.test %}
+                {% set grand_total.v = grand_total.v + item.total %}
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr class="fw-bold">
+                <td>Total</td>
+                <td class="text-end">{{ grand_train.v }}</td>
+                <td class="text-end">{{ grand_val.v }}</td>
+                <td class="text-end">{{ grand_test.v }}</td>
+                <td class="text-end">{{ grand_total.v }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+    {% else %}
+      <div class="alert demo-alert" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        Dataset belum tersedia di folder <code>dataset/train</code>,
+        <code>dataset/val</code>, dan <code>dataset/test</code>. Gunakan
+        <code>split_dataset.py</code> untuk membagi dataset mentah menjadi
+        struktur tersebut.
+      </div>
+    {% endif %}
+
+    <!-- ==================== PENJELASAN PEMBAGIAN DATA ==================== -->
+    <div class="row g-4 mt-1">
+      <div class="col-md-4">
+        <div class="explain-card p-4 h-100">
+          <i class="bi bi-mortarboard icon-lg-sogan"></i>
+          <h6 class="fw-bold mt-2">Data Train (Latih)</h6>
+          <p class="small text-muted mb-0">
+            Bagian terbesar dari dataset. Foto-foto ini yang benar-benar
+            dipakai sistem untuk belajar mengenali ciri khas tiap motif,
+            seperti murid yang belajar dari contoh soal.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="explain-card p-4 h-100">
+          <i class="bi bi-clipboard-check icon-lg-sogan"></i>
+          <h6 class="fw-bold mt-2">Data Validasi</h6>
+          <p class="small text-muted mb-0">
+            Dipakai untuk mengecek perkembangan belajar sistem di sela-sela
+            proses pelatihan, mirip seperti kuis latihan sebelum ujian
+            sesungguhnya.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="explain-card p-4 h-100">
+          <i class="bi bi-award icon-lg-sogan"></i>
+          <h6 class="fw-bold mt-2">Data Test (Uji)</h6>
+          <p class="small text-muted mb-0">
+            Foto yang sama sekali belum pernah dilihat sistem selama belajar.
+            Dipakai di akhir sebagai ujian sesungguhnya, untuk mengukur
+            akurasi yang tampil di halaman Evaluasi Model.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block title %}Evaluasi Model{% endblock %}
+
+{% block content %}
+  <div class="page-header-strip batik-pattern-bg">
+    <div class="container text-center py-5">
+      <h1 class="font-display text-white mb-2">Evaluasi Model</h1>
+      <p class="hero-subtitle mx-auto mb-0">Transparansi performa sistem terhadap data uji</p>
+    </div>
+  </div>
+  <div class="canting-divider"></div>
+
+  <div class="container my-5">
+
+    {% if model_mode != "terlatih" or not metrik %}
+      <div class="alert demo-alert" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        Model khusus motif batik belum dilatih, sehingga belum ada data evaluasi
+        untuk ditampilkan. Jalankan <code>python train_model.py</code> setelah
+        dataset siap agar halaman ini menampilkan grafik akurasi, loss, dan
+        confusion matrix yang sesungguhnya.
+      </div>
+    {% else %}
+
+      <!-- ==================== RINGKASAN METRIK ==================== -->
+      <div class="row g-4 mb-3 text-center">
+        <div class="col-6 col-md-3">
+          <div class="stat-card p-4">
+            <i class="bi bi-graph-up-arrow stat-icon"></i>
+            <h3 class="font-display mb-0">{{ metrik.akurasi_test }}%</h3>
+            <p class="text-muted small mb-0">Akurasi Data Uji</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card p-4">
+            <i class="bi bi-graph-down stat-icon"></i>
+            <h3 class="font-display mb-0">{{ metrik.loss_test }}</h3>
+            <p class="text-muted small mb-0">Loss Data Uji</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card p-4">
+            <i class="bi bi-flower2 stat-icon"></i>
+            <h3 class="font-display mb-0">{{ metrik.jumlah_kelas }}</h3>
+            <p class="text-muted small mb-0">Jumlah Kelas</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card p-4">
+            <i class="bi bi-images stat-icon"></i>
+            <h3 class="font-display mb-0">{{ metrik.jumlah_data_train + metrik.jumlah_data_val + metrik.jumlah_data_test }}</h3>
+            <p class="text-muted small mb-0">Total Gambar</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4 mb-5">
+        <div class="col-md-6">
+          <div class="explain-card p-3 h-100">
+            <p class="small mb-0">
+              <strong>Apa itu akurasi?</strong> Persentase seberapa sering
+              sistem menebak motif dengan benar pada data uji, yaitu
+              foto-foto yang belum pernah dilihat sistem sebelumnya. Akurasi
+              {{ metrik.akurasi_test }}% berarti dari 100 foto uji, sekitar
+              {{ metrik.akurasi_test | round | int }} di antaranya berhasil
+              ditebak dengan tepat oleh sistem.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="explain-card p-3 h-100">
+            <p class="small mb-0">
+              <strong>Apa itu loss?</strong> Angka yang menunjukkan seberapa
+              jauh tebakan sistem meleset dari jawaban yang benar. Berbeda
+              dengan akurasi, semakin kecil nilai loss maka semakin baik.
+              Nilai loss dipakai untuk mengarahkan proses belajar sistem
+              selama pelatihan berlangsung.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== GRAFIK RIWAYAT TRAINING ==================== -->
+      {% if ada_grafik_riwayat %}
+        <div class="info-card p-4 mb-4">
+          <h6 class="fw-bold mb-3"><i class="bi bi-bar-chart-line"></i> Grafik Akurasi &amp; Loss Selama Training</h6>
+          <p class="small text-muted">
+            Kurva ini merekam perkembangan sistem dari awal hingga akhir
+            proses belajar (dibaca dari kiri ke kanan, tiap titik mewakili
+            satu putaran belajar yang disebut epoch). Idealnya, garis akurasi
+            naik dan garis loss turun secara stabil. Jika garis validasi
+            mulai memburuk sementara garis training terus membaik, itu
+            pertanda sistem mulai menghafal data latih alih-alih benar-benar
+            memahami polanya, kondisi yang disebut overfitting.
+          </p>
+          <img src="{{ url_for('static', filename='evaluasi/training_history.png') }}"
+               alt="Grafik akurasi dan loss training" class="img-fluid rounded d-block mx-auto">
+          <p class="small text-muted mt-3 mb-0">
+            Model ini dilatih selama {{ konfigurasi_training.epoch_feature_extraction }} epoch
+            tahap feature extraction, dilanjutkan {{ konfigurasi_training.epoch_fine_tuning }} epoch
+            tahap fine-tuning, dan berakhir dengan loss data uji sebesar {{ metrik.loss_test }}.
+            {% if metrik.loss_test < 0.5 %}
+              Nilai loss yang cukup rendah ini menunjukkan tebakan sistem umumnya sudah dekat dengan jawaban yang benar.
+            {% else %}
+              Nilai loss ini masih tergolong tinggi, artinya tebakan sistem kadang masih cukup jauh meleset dari jawaban yang benar.
+            {% endif %}
+          </p>
+        </div>
+      {% endif %}
+
+      <!-- ==================== CONFUSION MATRIX ==================== -->
+      {% if ada_confusion_matrix %}
+        <div class="info-card p-4 mb-4">
+          <h6 class="fw-bold mb-3"><i class="bi bi-grid-3x3"></i> Confusion Matrix</h6>
+          <p class="small text-muted">
+            Tabel warna ini menunjukkan hasil tebakan sistem terhadap data
+            uji. Baris menunjukkan motif yang sebenarnya, kolom menunjukkan
+            motif yang ditebak sistem. Warna gelap pada garis diagonal
+            (dari kiri atas ke kanan bawah) artinya tebakan benar. Warna
+            gelap di luar garis diagonal menunjukkan pasangan motif yang
+            paling sering tertukar satu sama lain.
+          </p>
+          <img src="{{ url_for('static', filename='evaluasi/confusion_matrix.png') }}"
+               alt="Confusion matrix hasil evaluasi model" class="img-fluid rounded d-block mx-auto">
+          {% if analisis %}
+            <p class="small text-muted mt-3 mb-0">
+              Motif dengan pengenalan paling akurat adalah
+              <strong>{{ analisis.kelas_terbaik.nama.replace("_", " ") }}</strong>
+              (recall {{ analisis.kelas_terbaik.recall }}%), sedangkan motif
+              <strong>{{ analisis.kelas_terlemah.nama.replace("_", " ") }}</strong>
+              paling sering meleset (recall {{ analisis.kelas_terlemah.recall }}%).
+              {% if analisis.pasangan_tertukar %}
+                Pasangan yang paling sering tertukar adalah foto motif
+                <strong>{{ analisis.pasangan_tertukar[0].replace("_", " ") }}</strong>
+                yang {{ analisis.pasangan_tertukar[2] }} kali justru ditebak sebagai
+                <strong>{{ analisis.pasangan_tertukar[1].replace("_", " ") }}</strong>.
+              {% endif %}
+            </p>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <!-- ==================== PERFORMA PER KELAS ==================== -->
+      {% if metrik.laporan_per_kelas %}
+        <div class="info-card p-4 mb-4">
+          <h6 class="fw-bold mb-1"><i class="bi bi-list-check"></i> Performa Tiap Motif</h6>
+          <p class="small text-muted">
+            Precision menunjukkan seberapa tepat sistem saat menebak suatu
+            motif (dari semua tebakan "motif ini", berapa persen yang benar).
+            Recall menunjukkan seberapa lengkap sistem menemukan motif
+            tersebut (dari semua foto motif ini yang sebenarnya, berapa
+            persen yang berhasil dikenali). F1-score adalah gabungan
+            keseimbangan dari keduanya.
+          </p>
+          <div class="table-responsive">
+            <table class="table table-batik align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Motif</th>
+                  <th class="text-end">Precision</th>
+                  <th class="text-end">Recall</th>
+                  <th class="text-end">F1-Score</th>
+                  <th class="text-end">Jumlah Data Uji</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for nama_kelas in metrik.nama_kelas %}
+                  {% set baris = metrik.laporan_per_kelas[nama_kelas] %}
+                  <tr>
+                    <td>
+                      <span class="dot-swatch swatch-{{ nama_kelas|lower }}"></span>
+                      {{ nama_kelas.replace("_", " ") }}
+                    </td>
+                    <td class="text-end">{{ (baris.precision * 100) | round(1) }}%</td>
+                    <td class="text-end">{{ (baris.recall * 100) | round(1) }}%</td>
+                    <td class="text-end">{{ (baris["f1-score"] * 100) | round(1) }}%</td>
+                    <td class="text-end">{{ baris.support | int }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- ==================== KONFIGURASI TRAINING ==================== -->
+      <div class="info-card p-4 mb-4">
+        <h6 class="fw-bold mb-3"><i class="bi bi-gear"></i> Konfigurasi Training</h6>
+        <div class="row g-3">
+          <div class="col-6 col-md-3">
+            <p class="small text-muted mb-0">Batch Size</p>
+            <p class="fw-bold mb-0">{{ konfigurasi_training.batch_size }}</p>
+          </div>
+          <div class="col-6 col-md-3">
+            <p class="small text-muted mb-0">Epoch Feature Extraction</p>
+            <p class="fw-bold mb-0">{{ konfigurasi_training.epoch_feature_extraction }}</p>
+          </div>
+          <div class="col-6 col-md-3">
+            <p class="small text-muted mb-0">Epoch Fine-Tuning</p>
+            <p class="fw-bold mb-0">{{ konfigurasi_training.epoch_fine_tuning }}</p>
+          </div>
+          <div class="col-6 col-md-3">
+            <p class="small text-muted mb-0">Ukuran Input Gambar</p>
+            <p class="fw-bold mb-0">{{ konfigurasi_training.ukuran_input }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== CATATAN AKURASI ==================== -->
+      <div class="alert demo-alert mt-4" role="alert">
+        <i class="bi bi-lightbulb-fill me-2"></i>
+        <strong>Mengapa hasil klasifikasi bisa keliru?</strong> Beberapa motif
+        keraton memiliki kemiripan visual (misalnya kepadatan garis diagonal
+        pada Parang dan gradasi bentuk pada Mega Mendung dapat terlihat mirip
+        pada foto dengan sudut atau pencahayaan tertentu). Akurasi juga
+        dipengaruhi oleh jumlah dan variasi gambar pada dataset training.
+        Menambah jumlah data, memperbanyak variasi sudut foto, dan menambah
+        epoch fine-tuning umumnya dapat meningkatkan akurasi model.
+      </div>
+
+    {% endif %}
+  </div>
+{% endblock %}
