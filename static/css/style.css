@@ -1,0 +1,436 @@
+/* Tema visual "Kain & Canting": indigo, sogan, dan emas prada khas batik */
+
+/* --- 1. Token desain: warna, font, radius ------------------------------- */
+:root {
+  --batik-indigo: #1f2d50;      /* Biru tua khas kain indigo/tarum */
+  --batik-indigo-dark: #141d38;
+  --batik-sogan: #a15c2b;       /* Cokelat sogan, warna dasar batik klasik */
+  --batik-sogan-light: #c98a4f;
+  --batik-gold: #c9a227;        /* Emas prada, aksen mewah pada batik */
+  --batik-cream: #f6efe0;       /* Warna kain mori sebelum diwarnai */
+  --batik-ink: #241c14;         /* Warna malam/lilin batik, dipakai untuk teks gelap */
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --shadow-soft: 0 10px 30px rgba(31, 45, 80, 0.12);
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--batik-cream);
+  color: var(--batik-ink);
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+}
+
+/* --- 2. Pola latar bertekstur batik (motif kawung sederhana, SVG inline) - */
+.batik-pattern-bg {
+  background-color: var(--batik-indigo);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23c9a227' stroke-width='1' opacity='0.25'%3E%3Ccircle cx='20' cy='20' r='14'/%3E%3Ccircle cx='60' cy='60' r='14'/%3E%3Ccircle cx='60' cy='20' r='6'/%3E%3Ccircle cx='20' cy='60' r='6'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* --- 3. Navbar ------------------------------------------------------------ */
+.navbar-batik {
+  background-color: var(--batik-indigo-dark);
+}
+
+.navbar-batik .navbar-brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--batik-gold) !important;
+  letter-spacing: 0.5px;
+}
+
+.navbar-batik .nav-link {
+  color: #eee2c9 !important;
+  font-weight: 500;
+}
+
+.navbar-batik .nav-link:hover {
+  color: var(--batik-gold) !important;
+}
+
+.navbar-batik .nav-link.active {
+  color: var(--batik-gold) !important;
+  font-weight: 700;
+}
+
+.navbar-batik .dropdown-menu {
+  background-color: var(--batik-indigo-dark);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: var(--radius-md);
+}
+
+.navbar-batik .dropdown-item {
+  color: #eee2c9;
+}
+
+.navbar-batik .dropdown-item:hover,
+.navbar-batik .dropdown-item:focus {
+  background-color: rgba(201, 162, 39, 0.15);
+  color: var(--batik-gold);
+}
+
+/* --- 4. Hero section -------------------------------------------------------- */
+.hero-section {
+  padding: 5rem 1rem 6rem;
+  color: var(--batik-cream);
+  position: relative;
+}
+
+.hero-title {
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.hero-title .accent {
+  color: var(--batik-gold);
+}
+
+.hero-subtitle {
+  color: #d9cead;
+  max-width: 640px;
+}
+
+/* Garis pemisah bergaya "canting" antara hero dan konten */
+.canting-divider {
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--batik-gold) 0,
+    var(--batik-gold) 18px,
+    var(--batik-sogan) 18px,
+    var(--batik-sogan) 36px
+  );
+}
+
+/* --- 5. Kartu upload -------------------------------------------------------- */
+.upload-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(161, 92, 43, 0.15);
+}
+
+.dropzone {
+  border: 2px dashed var(--batik-sogan-light);
+  border-radius: var(--radius-md);
+  background-color: #fffaf0;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+}
+
+.dropzone.dragover {
+  border-color: var(--batik-gold);
+  background-color: #fff3d9;
+}
+
+.dropzone .dropzone-icon {
+  font-size: 2.5rem;
+  color: var(--batik-sogan);
+  margin-bottom: 0.5rem;
+}
+
+#preview-image {
+  max-height: 260px;
+  max-width: 100%;
+  margin: 0 auto;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  display: none; /* ditampilkan lewat JS setelah user memilih gambar */
+}
+
+/* --- 6. Tombol -------------------------------------------------------------- */
+.btn-batik {
+  background-color: var(--batik-sogan);
+  border-color: var(--batik-sogan);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.65rem 2rem;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-batik:hover {
+  background-color: var(--batik-indigo);
+  border-color: var(--batik-indigo);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.btn-outline-batik {
+  border: 2px solid var(--batik-gold);
+  color: var(--batik-gold);
+  border-radius: 999px;
+  font-weight: 600;
+  background: transparent;
+}
+
+.btn-outline-batik:hover {
+  background-color: var(--batik-gold);
+  color: var(--batik-indigo-dark);
+}
+
+/* --- 7. Halaman hasil prediksi ---------------------------------------------- */
+.result-image-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 0.75rem;
+  height: 100%;
+  min-height: 420px;
+}
+
+.result-image-wrapper img {
+  border-radius: var(--radius-md);
+  max-width: 100%;
+  max-height: 560px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.mini-stat {
+  background: #fff;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  color: var(--batik-sogan);
+}
+
+.badge-outline-sogan {
+  background: transparent;
+  border: 1px solid var(--batik-sogan);
+  color: var(--batik-sogan);
+}
+
+.prediction-badge {
+  background-color: var(--batik-gold);
+  color: var(--batik-indigo-dark);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-md);
+  display: inline-block;
+}
+
+.confidence-item + .confidence-item {
+  margin-top: 0.9rem;
+}
+
+.confidence-label {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.progress {
+  height: 10px;
+  border-radius: 999px;
+  background-color: #eee2c9;
+}
+
+.progress-bar-batik {
+  background: linear-gradient(90deg, var(--batik-sogan) 0%, var(--batik-gold) 100%);
+}
+
+.info-card {
+  background-color: #fff;
+  border-radius: var(--radius-lg);
+  border-left: 5px solid var(--batik-gold);
+  box-shadow: var(--shadow-soft);
+}
+
+/* --- 8. Alert mode demo ------------------------------------------------------ */
+.demo-alert {
+  border-left: 5px solid var(--batik-sogan);
+  background-color: #fff3e6;
+}
+
+/* --- 9. Footer ---------------------------------------------------------------- */
+footer {
+  background-color: var(--batik-indigo-dark);
+  color: #cbbf9c;
+}
+
+footer a {
+  color: var(--batik-gold);
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* --- 10. Loading spinner overlay saat proses prediksi -------------------------- */
+#loading-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 29, 56, 0.85);
+  z-index: 1050;
+  color: var(--batik-cream);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* --- 11. Aksesibilitas: hormati preferensi reduce-motion ------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .btn-batik:hover {
+    transform: none;
+  }
+}
+
+/* --- 12. Header halaman non-beranda (Klasifikasi, Evaluasi, Dataset, Tentang) --- */
+.page-header-strip {
+  padding: 1rem 0;
+}
+
+/* --- 13. Kartu statistik ringkas (dashboard & evaluasi) ------------------------- */
+.stat-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  height: 100%;
+}
+
+.stat-icon {
+  font-size: 1.8rem;
+  color: var(--batik-gold);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* --- 14. Langkah "Cara Kerja Sistem" -------------------------------------------- */
+.workflow-step {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  height: 100%;
+}
+
+/* --- 15. Kartu galeri motif (dashboard) ----------------------------------------- */
+.motif-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  transition: transform 0.15s ease;
+}
+
+.motif-card:hover {
+  transform: translateY(-4px);
+}
+
+.motif-card-img {
+  height: 140px;
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Titik kecil penanda warna motif di tabel dataset */
+.dot-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.dot-swatch.swatch-kawung { background-color: var(--batik-sogan); }
+.dot-swatch.swatch-mega_mendung { background-color: var(--batik-indigo); }
+.dot-swatch.swatch-parang { background-color: var(--batik-sogan-light); }
+.dot-swatch.swatch-truntum { background-color: var(--batik-gold); }
+
+
+/* --- 16. CTA banner di dashboard ------------------------------------------------- */
+.cta-banner {
+  background-color: var(--batik-indigo);
+  color: var(--batik-cream);
+  border-radius: var(--radius-lg);
+}
+
+/* --- 18. Kartu penjelasan langkah sederhana (dashboard) -------------------------- */
+.explain-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.explain-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--batik-gold);
+  color: var(--batik-indigo-dark);
+  font-family: var(--font-display);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- 19. Accordion FAQ bertema batik --------------------------------------------- */
+.accordion-button:not(.collapsed) {
+  background-color: #fff3d9;
+  color: var(--batik-indigo-dark);
+}
+
+.accordion-button:focus {
+  box-shadow: 0 0 0 0.2rem rgba(201, 162, 39, 0.25);
+}
+
+/* --- 21. Kelas pengganti inline style (ikon, badge, spinner) --------------------- */
+.icon-xl-sogan {
+  font-size: 4rem;
+  color: var(--batik-sogan);
+}
+
+.icon-lg-sogan {
+  font-size: 1.75rem;
+  color: var(--batik-sogan);
+}
+
+.badge-gold {
+  background-color: var(--batik-gold);
+  color: var(--batik-indigo-dark);
+}
+
+.badge-sogan {
+  background-color: var(--batik-sogan);
+  color: #fff;
+}
+
+.spinner-gold {
+  width: 3rem;
+  height: 3rem;
+  color: var(--batik-gold);
+}
+
+/* --- 20. Tabel gaya batik (halaman Dataset) -------------------------------------- */
+.table-batik thead {
+  background-color: var(--batik-indigo);
+  color: var(--batik-cream);
+}
+
+.table-batik td, .table-batik th {
+  vertical-align: middle;
+}
