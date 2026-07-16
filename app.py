@@ -81,11 +81,14 @@ def prediksi_gambar(path_gambar: str):
 
 
 def hitung_statistik_dataset():
-    # Hitung jumlah gambar per kelas langsung dari folder dataset/train, val, test
-    statistik = []
+    # Hitung jumlah gambar per kelas langsung dari folder dataset/train, val, test.
+    # Kalau folder dataset tidak ada di server (memang sengaja tidak ikut di-deploy
+    # karena isinya ribuan foto), pakai snapshot statistik dari model/dataset_stats.json
+    # yang dibuat sekali lewat generate_dataset_stats.py di komputer lokal.
     if not os.path.isdir(config.TRAIN_DIR):
-        return statistik
+        return _muat_statistik_dataset_dari_snapshot()
 
+    statistik = []
     nama_kelas_di_disk = sorted(
         d for d in os.listdir(config.TRAIN_DIR) if os.path.isdir(os.path.join(config.TRAIN_DIR, d))
     )
@@ -110,6 +113,17 @@ def hitung_statistik_dataset():
             }
         )
     return statistik
+
+
+def _muat_statistik_dataset_dari_snapshot():
+    # Baca statistik dataset dari snapshot JSON (dibuat oleh generate_dataset_stats.py)
+    # supaya halaman /dataset tetap menampilkan angka asli walau folder dataset
+    # tidak ikut di-deploy ke server.
+    snapshot_path = os.path.join(config.MODEL_DIR, "dataset_stats.json")
+    if os.path.exists(snapshot_path):
+        with open(snapshot_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
 
 
 def muat_metrik_evaluasi():
