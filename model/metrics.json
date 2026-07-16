@@ -10,5 +10,73 @@
   "jumlah_data_val": 267,
   "jumlah_data_test": 274,
   "akurasi_test": 88.32,
-  "loss_test": 0.4342
+  "loss_test": 0.4342,
+  "batch_size": 32,
+  "epoch_feature_extraction": 15,
+  "epoch_fine_tuning": 10,
+  "laporan_per_kelas": {
+    "Kawung": {
+      "precision": 0.8536585365853658,
+      "recall": 0.9090909090909091,
+      "f1-score": 0.8805031446540881,
+      "support": 77.0
+    },
+    "Mega_Mendung": {
+      "precision": 0.8961038961038961,
+      "recall": 0.9583333333333334,
+      "f1-score": 0.9261744966442953,
+      "support": 72.0
+    },
+    "Parang": {
+      "precision": 0.9310344827586207,
+      "recall": 0.8307692307692308,
+      "f1-score": 0.8780487804878049,
+      "support": 65.0
+    },
+    "Truntum": {
+      "precision": 0.8596491228070176,
+      "recall": 0.8166666666666667,
+      "f1-score": 0.8376068376068376,
+      "support": 60.0
+    },
+    "accuracy": 0.8832116788321168,
+    "macro avg": {
+      "precision": 0.885111509563725,
+      "recall": 0.878715034965035,
+      "f1-score": 0.8805833148482565,
+      "support": 274.0
+    },
+    "weighted avg": {
+      "precision": 0.884479476584982,
+      "recall": 0.8832116788321168,
+      "f1-score": 0.8825287842513562,
+      "support": 274.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      70,
+      2,
+      1,
+      4
+    ],
+    [
+      1,
+      69,
+      2,
+      0
+    ],
+    [
+      2,
+      5,
+      54,
+      4
+    ],
+    [
+      9,
+      1,
+      1,
+      49
+    ]
+  ]
 }

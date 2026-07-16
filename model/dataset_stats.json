@@ -1,0 +1,30 @@
+[
+  {
+    "nama": "Kawung",
+    "train": 354,
+    "val": 75,
+    "test": 77,
+    "total": 506
+  },
+  {
+    "nama": "Mega_Mendung",
+    "train": 330,
+    "val": 70,
+    "test": 72,
+    "total": 472
+  },
+  {
+    "nama": "Parang",
+    "train": 298,
+    "val": 63,
+    "test": 65,
+    "total": 426
+  },
+  {
+    "nama": "Truntum",
+    "train": 276,
+    "val": 59,
+    "test": 60,
+    "total": 395
+  }
+]
