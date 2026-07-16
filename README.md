@@ -9,7 +9,6 @@
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-Keras-orange?logo=tensorflow&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-purple?logo=bootstrap&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)
-![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 Unggah foto kain batik, sistem akan mengenali motifnya dan menjelaskan asal daerah serta makna filosofisnya, ditenagai VGG16 hasil transfer learning.
 
@@ -40,7 +39,6 @@ Selain fitur klasifikasi, aplikasi ini transparan soal performa modelnya sendiri
 - **Evaluasi model transparan** — grafik akurasi/loss, confusion matrix, performa per kelas, dan konfigurasi training, semuanya bisa dilihat publik
 - **Halaman dataset** — sumber data dan distribusi jumlah gambar per kelas
 - **Mode demo otomatis** — kalau model belum dilatih, aplikasi tetap jalan pakai bobot ImageNet bawaan supaya alurnya tetap bisa dicoba
-- **Siap deploy** — sudah ada Dockerfile, tinggal push ke Hugging Face Spaces, Render, atau platform sejenis
 
 ## Tangkapan Layar
 
@@ -107,7 +105,8 @@ Selain fitur klasifikasi, aplikasi ini transparan soal performa modelnya sendiri
 | Pemrosesan Gambar | Pillow, NumPy |
 | Frontend | Bootstrap 5, Bootstrap Icons, Chart.js (divendor lokal) |
 | Containerization | Docker |
-| Deployment | Hugging Face Spaces |
+| Deployment | Railway |
+
 
 ## Struktur Proyek
 
@@ -138,7 +137,7 @@ batik-vgg16-app/
 
 ```bash
 # 1. Clone repository
-git clone <url-repo-anda>
+git clone https://github.com/Alnazh/batik-vgg16-app.git
 cd batik-vgg16-app
 
 # 2. Buat virtual environment
@@ -170,26 +169,3 @@ Buka **http://localhost:5000** di browser. Kalau belum ada model hasil training,
 5. Jalankan ulang `python app.py`, aplikasi otomatis memakai model baru tersebut.
 
 Lihat performa model secara lengkap dan real-time di halaman **Evaluasi Model** setelah training selesai.
-
-## Deployment
-
-Proyek ini sudah dilengkapi `Dockerfile` sehingga bisa dideploy ke platform mana pun yang mendukung container, misalnya **Hugging Face Spaces**:
-
-```bash
-# Login & push seperti repository git biasa ke Space Anda
-git remote add space https://huggingface.co/spaces/<username>/<nama-space>
-git push space main
-```
-
-> **Catatan:** file model (`model/*.h5`) biasanya berukuran besar. Gunakan Git LFS sebelum push:
-> ```bash
-> git lfs install
-> git lfs track "*.h5"
-> git add .gitattributes
-> ```
-
-Untuk platform lain dengan RAM terbatas (seperti free tier Render yang hanya 512 MB), perhatikan bahwa TensorFlow + VGG16 butuh RAM lebih besar dari itu saat inferensi. Hugging Face Spaces (free CPU Basic: 16 GB RAM) jauh lebih aman untuk aplikasi ini.
-
-## Lisensi
-
-Proyek ini menggunakan lisensi MIT. Model dasar VGG16 menggunakan bobot pretrained ImageNet dari Keras Applications. Dataset bersumber dari [Kaggle - Dataset Batik Keraton](https://www.kaggle.com/datasets/stefaron/dataset-batik-keraton).
