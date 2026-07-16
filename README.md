@@ -137,7 +137,7 @@ batik-vgg16-app/
 
 ```bash
 # 1. Clone repository
-git clone <url-repo-anda>
+git clone [<https://github.com/Alnazh/batik-vgg16-app.git>](https://github.com/Alnazh/batik-vgg16-app.git)
 cd batik-vgg16-app
 
 # 2. Buat virtual environment
